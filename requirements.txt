@@ -1,0 +1,10 @@
+opencv-python
+easyocr
+fastapi
+pandas
+typing_extensions
+uvicorn
+python-dotenv
+requests
+numpy
+python-multipart
