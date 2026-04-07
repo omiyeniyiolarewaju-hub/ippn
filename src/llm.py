@@ -3,7 +3,7 @@ import json
 import base64
 
 class LLMExtractor:
-    def __init__(self, ollama_url="http://localhost:11434/api/generate", model="qwen2.5-vl:3b"):
+    def __init__(self, ollama_url="http://localhost:11434/api/generate", model="qwen2.5-vl"):
         self.url = ollama_url
         self.model = model
 

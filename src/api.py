@@ -1,13 +1,11 @@
 import os
 from fastapi import FastAPI, UploadFile, File, Form
-from src.ocr import OCRProcessor
 from src.llm import LLMExtractor
 from src.database import DatabaseManager
 
 class OmiyeAPI:
     def __init__(self):
-        self.app = FastAPI(title="Omiye Master OCR & Extraction API")
-        self.ocr = OCRProcessor()
+        self.app = FastAPI(title="Omiye Master Vision Extraction API")
         self.llm = LLMExtractor()
         self.db = DatabaseManager()
         self.setup_routes()
@@ -22,22 +20,17 @@ class OmiyeAPI:
             with open(file_path, "wb") as f:
                 f.write(await file.read())
 
-            # OCR Extract (Optional: kept for raw text record)
-            try:
-                text = self.ocr.extract_text(file_path)
-            except Exception as e:
-                text = f"OCR failed: {str(e)}"
-
-            # Direct Vision Extraction (New)
+            # Vision Extraction (using qwen2.5-vl)
             structured = self.llm.extract_structured_data(image_path=file_path)
+            text = structured.get("transcription", "No transcription available.")
 
             # Save
-            self.db.save_report("OCR + Vision", text, structured)
+            self.db.save_report("Vision Process", text, structured)
 
             return {
-                "message": "Processed successfully",
-                "extracted_text_ocr": text,
-                "structured_output_vision": structured
+                "message": "Processed successfully using qwen2.5-vl",
+                "transcription": text,
+                "structured_output": structured
             }
 
         @self.app.post("/submit-text/")
