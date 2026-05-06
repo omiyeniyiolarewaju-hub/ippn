@@ -1,6 +1,5 @@
-from src.ocr import OCRProcessor
-from src.llm import LLMExtractor
-from src.database import DatabaseManager
+from llm import LLMExtractor
+from database import DatabaseManager
 import os
 
 def process_local_image(image_path):
@@ -8,24 +7,22 @@ def process_local_image(image_path):
         print(f"Error: Image not found at {image_path}")
         return
 
-    ocr = OCRProcessor()
     llm = LLMExtractor()
     db = DatabaseManager()
 
     print(f"Processing image: {image_path}")
 
-    # OCR Extract
-    try:
-        text = ocr.extract_text(image_path)
-        print("\n--- OCR Text ---\n")
-        print(text)
-    except Exception as e:
-        text = f"OCR failed: {str(e)}"
-        print(text)
-
-    # Direct Vision Extraction
-    print("\n--- LLM Structured Data Extraction ---\n")
+    # Vision Extraction using qwen2.5-vl
+    print("\n--- LLM Vision Extraction (qwen2.5-vl) ---\n")
     structured = llm.extract_structured_data(image_path=image_path)
+    
+    # Extract transcription from structured data
+    text = structured.get("transcription", "No transcription available.")
+    
+    print("\n--- Transcription ---\n")
+    print(text)
+    
+    print("\n--- Structured Data ---\n")
     print(structured)
 
     # Save to Database
